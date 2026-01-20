@@ -1,6 +1,8 @@
 module medislink-backend
 
-go 1.24.2
+go 1.24.0
+
+toolchain go1.24.2
 
 require (
 	github.com/cloudinary/cloudinary-go/v2 v2.14.0

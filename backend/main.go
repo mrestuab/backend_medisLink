@@ -14,16 +14,29 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	// In production (e.g., Railway), environment variables are injected by the platform
+	// and a local .env file may not exist. Don't crash if it's missing.
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found; continuing with environment variables")
 	}
 
 	config.ConnectDB()
 	app := fiber.New()
 
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("OK")
+	})
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "ok"})
+	})
+
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:5173",
+		AllowOrigins: func() string {
+			if v := os.Getenv("CORS_ALLOW_ORIGINS"); v != "" {
+				return v
+			}
+			return "http://localhost:5173"
+		}(),
 
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 
@@ -45,7 +58,11 @@ func main() {
 	routes.DonationRoutes(app)
 
 	port := os.Getenv("PORT")
-	app.Listen(":" + port)
+	if port == "" {
+		port = "8080"
+	}
 
-	log.Fatal(app.Listen(":8080"))
+	addr := "0.0.0.0:" + port
+	log.Printf("Listening on %s", addr)
+	log.Fatal(app.Listen(addr))
 }
