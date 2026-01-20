@@ -23,8 +23,7 @@ func StartCronJob() {
 	})
 
 	if err != nil {
-		log.Println("Gagal menjalankan cron job:", err)
-		return
+		log.Fatal("Gagal menjalankan cron job:", err)
 	}
 
 	c.Start()
