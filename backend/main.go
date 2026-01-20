@@ -14,9 +14,9 @@ import (
 )
 
 func main() {
-	// Load .env file only in development (Railway akan pakai environment variables)
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found, using environment variables")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
 	}
 
 	config.ConnectDB()
@@ -45,9 +45,7 @@ func main() {
 	routes.DonationRoutes(app)
 
 	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+	app.Listen(":" + port)
 
-	log.Fatal(app.Listen(":" + port))
+	log.Fatal(app.Listen(":8080"))
 }
