@@ -24,7 +24,7 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "https://www.medislink.web.id",
+		AllowOrigins: "https://www.medislink.web.id/",
 
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 
