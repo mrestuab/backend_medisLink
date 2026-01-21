@@ -24,7 +24,7 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "https://frontend-medislink-cyan.vercel.app",
+		AllowOrigins: "https://www.medislink.web.id",
 
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 
