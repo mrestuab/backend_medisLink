@@ -134,7 +134,7 @@ func SendOTPEmail(toEmail, otp string) error {
 	`, otp)
 
 	params := &resend.SendEmailRequest{
-		From:    "MedisLink <onboarding@resend.dev>", // Ganti dengan domain terverifikasi Anda
+		From:    "MedisLink <noreply@medislink.web.id>",
 		To:      []string{toEmail},
 		Subject: "Reset Password - Kode OTP MedisLink",
 		Html:    htmlContent,
