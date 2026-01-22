@@ -11,6 +11,7 @@ func NewsRoutes(app *fiber.App) {
 	api := app.Group("/api/news")
 
 	api.Get("/", controllers.GetAllNews)
+	api.Get("/:id", controllers.GetNewsByID)
 
 	protected := api.Group("/")
 	protected.Use(middlewares.JWTProtected())

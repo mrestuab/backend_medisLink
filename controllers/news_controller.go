@@ -11,6 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func CreateNews(c *fiber.Ctx) error {
@@ -64,6 +65,29 @@ func GetAllNews(c *fiber.Ctx) error {
 	cursor.All(context.Background(), &newsList)
 
 	return c.JSON(newsList)
+}
+
+func GetNewsByID(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid ID format"})
+	}
+
+	coll := config.DB.Collection("news")
+
+	var news models.News
+	err = coll.FindOne(context.Background(), bson.M{"_id": objID}).Decode(&news)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return c.Status(404).JSON(fiber.Map{"error": "News not found"})
+		}
+		return c.Status(500).JSON(fiber.Map{"error": "Internal Server Error"})
+	}
+
+	return c.JSON(news)
 }
 
 func UpdateNews(c *fiber.Ctx) error {
