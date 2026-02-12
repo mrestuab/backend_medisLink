@@ -46,7 +46,9 @@ func main() {
 	routes.DonationRoutes(app)
 
 	port := os.Getenv("PORT")
-	app.Listen(":" + port)
-
-	log.Fatal(app.Listen(":8080"))
+	if port == "" {
+		port = "8080"
+	}
+	
+	log.Fatal(app.Listen(":" + port))
 }
