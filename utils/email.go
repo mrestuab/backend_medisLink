@@ -37,7 +37,7 @@ func SendOTPEmail(toEmail, otp string) error {
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .header {
-            background: linear-gradient(135deg, #14b8a6 0%%, #0891b2 100%%);
+            background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
             padding: 30px;
             text-align: center;
         }
