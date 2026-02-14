@@ -32,18 +32,8 @@ func main() {
 	}))
 	jobs.StartCronJob()
 
-	routes.CategoryRoutes(app)
-	routes.InventoryLogRoutes(app)
-	routes.AddRoutes(app)
-	routes.NewsRoutes(app)
-	routes.NotificationRoutes(app)
-	routes.ReviewRoutes(app)
-	routes.LoanRoutes(app)
-	routes.ReturnRoutes(app)
-	routes.ToolRoutes(app)
-	routes.AuthRoutes(app)
-	routes.UserRoutes(app)
-	routes.DonationRoutes(app)
+	// Initialize all routes
+	routes.SetupRoutes(app)
 
 	port := os.Getenv("PORT")
 	if port == "" {
