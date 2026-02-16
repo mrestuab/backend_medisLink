@@ -2616,7 +2616,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "api.medislink.web.id",
+	Host:             "https://backendmedislink-production.up.railway.app/api",
 	BasePath:         "/",
 	Schemes:          []string{"https"},
 	Title:            "Medislink API",

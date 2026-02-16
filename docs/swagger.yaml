@@ -194,7 +194,7 @@ definitions:
       phone:
         type: string
     type: object
-host: api.medislink.web.id
+host: https://backendmedislink-production.up.railway.app/api
 info:
   contact: {}
   description: Medislink Backend API Documentation
