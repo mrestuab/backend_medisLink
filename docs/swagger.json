@@ -9,7 +9,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "https://backendmedislink-production.up.railway.app/api",
+    "host": "backendmedislink-production.up.railway.app",
     "basePath": "/",
     "paths": {
         "/api/adds/": {

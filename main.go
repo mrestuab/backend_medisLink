@@ -1,7 +1,7 @@
 // @title Medislink API
 // @version 1.0
 // @description Medislink Backend API Documentation
-// @host https://backendmedislink-production.up.railway.app/api
+// @host backendmedislink-production.up.railway.app
 // @BasePath /
 // @schemes https
 // @securityDefinitions.apikey BearerAuth
