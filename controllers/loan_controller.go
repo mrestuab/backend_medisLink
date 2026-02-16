@@ -14,6 +14,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// CreateLoan godoc
+// @Summary Create loan request
+// @Tags Loans
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param loan body models.Loan true "Loan Data"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/loans/ [post]
 func CreateLoan(c *fiber.Ctx) error {
 	var loan models.Loan
 
@@ -61,6 +72,14 @@ func CreateLoan(c *fiber.Ctx) error {
 	})
 }
 
+// GetAllLoans godoc
+// @Summary Get all loans (admin)
+// @Tags Loans
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {array} map[string]interface{}
+// @Failure 401 {object} map[string]string
+// @Router /api/loans/ [get]
 func GetAllLoans(c *fiber.Ctx) error {
 	coll := config.DB.Collection("loans")
 	pipeline := mongo.Pipeline{
@@ -107,6 +126,16 @@ func GetAllLoans(c *fiber.Ctx) error {
 	return c.JSON(results)
 }
 
+// CompleteLoan godoc
+// @Summary Mark loan as completed
+// @Tags Loans
+// @Security BearerAuth
+// @Produce json
+// @Param id path string true "Loan ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/loans/{id}/complete [put]
 func CompleteLoan(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -126,6 +155,14 @@ func CompleteLoan(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"message": "Loan marked as completed"})
 }
 
+// GetMyLoans godoc
+// @Summary Get current user loans
+// @Tags Loans
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {array} map[string]interface{}
+// @Failure 401 {object} map[string]string
+// @Router /api/loans/my [get]
 func GetMyLoans(c *fiber.Ctx) error {
 	userToken := c.Locals("user").(*jwt.Token)
 	claims := userToken.Claims.(jwt.MapClaims)
@@ -173,6 +210,18 @@ func GetMyLoans(c *fiber.Ctx) error {
 	return c.JSON(results)
 }
 
+// UpdateLoanStatus godoc
+// @Summary Update loan status
+// @Tags Loans
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "Loan ID"
+// @Param status body object true "Status Update"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/loans/{id}/status [put]
 func UpdateLoanStatus(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)

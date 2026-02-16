@@ -13,6 +13,20 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// CreateAdd godoc
+// @Summary Create advertisement
+// @Tags Adds
+// @Security BearerAuth
+// @Accept multipart/form-data
+// @Produce json
+// @Param title formData string true "Title"
+// @Param description formData string true "Description"
+// @Param link formData string false "Link"
+// @Param image formData file false "Image"
+// @Success 201 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/adds/ [post]
 func CreateAdd(c *fiber.Ctx) error {
 	fileHeader, err := c.FormFile("image")
 	var imageUrl string
@@ -53,6 +67,12 @@ func CreateAdd(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{"message": "Add created successfully"})
 }
 
+// GetAllAdds godoc
+// @Summary Get all advertisements
+// @Tags Adds
+// @Produce json
+// @Success 200 {array} models.Add
+// @Router /api/adds/ [get]
 func GetAllAdds(c *fiber.Ctx) error {
 	coll := config.DB.Collection("adds")
 
@@ -68,6 +88,18 @@ func GetAllAdds(c *fiber.Ctx) error {
 	return c.JSON(adds)
 }
 
+// UpdateAdd godoc
+// @Summary Update advertisement
+// @Tags Adds
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "Add ID"
+// @Param add body models.Add true "Add Data"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/adds/{id} [put]
 func UpdateAdd(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -89,6 +121,16 @@ func UpdateAdd(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"message": "Add updated successfully"})
 }
 
+// DeleteAdd godoc
+// @Summary Delete advertisement
+// @Tags Adds
+// @Security BearerAuth
+// @Produce json
+// @Param id path string true "Add ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/adds/{id} [delete]
 func DeleteAdd(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)

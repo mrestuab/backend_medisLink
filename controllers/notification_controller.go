@@ -14,6 +14,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// GetMyNotifications godoc
+// @Summary Get my notifications
+// @Tags Notifications
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {array} models.Notification
+// @Failure 401 {object} map[string]string
+// @Router /api/notifications/ [get]
 func GetMyNotifications(c *fiber.Ctx) error {
 	userToken := c.Locals("user").(*jwt.Token)
 	claims := userToken.Claims.(jwt.MapClaims)
@@ -41,6 +49,16 @@ func GetMyNotifications(c *fiber.Ctx) error {
 	return c.JSON(notifs)
 }
 
+// MarkAsRead godoc
+// @Summary Mark notification as read
+// @Tags Notifications
+// @Security BearerAuth
+// @Produce json
+// @Param id path string true "Notification ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/notifications/{id}/read [put]
 func MarkAsRead(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)

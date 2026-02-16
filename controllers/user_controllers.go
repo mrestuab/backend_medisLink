@@ -19,6 +19,15 @@ func getUserCollection() *mongo.Collection {
 	return config.DB.Collection("users")
 }
 
+// CreateUser godoc
+// @Summary Create user (admin/manual)
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param user body models.User true "User Data"
+// @Success 201 {object} models.User
+// @Failure 400 {object} map[string]string
+// @Router /api/users [post]
 func CreateUser(c *fiber.Ctx) error {
 	c.Context().SetUserValue("Content-Type", "application/json")
 
@@ -38,6 +47,14 @@ func CreateUser(c *fiber.Ctx) error {
 	return c.Status(201).JSON(user)
 }
 
+// GetAllUsers godoc
+// @Summary Get all users
+// @Tags Users
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {array} models.User
+// @Failure 401 {object} map[string]string
+// @Router /api/users/ [get]
 func GetAllUsers(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -56,6 +73,17 @@ func GetAllUsers(c *fiber.Ctx) error {
 	return c.JSON(users)
 }
 
+// GetUserByID godoc
+// @Summary Get user by ID
+// @Tags Users
+// @Security BearerAuth
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 200 {object} models.User
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/users/{id} [get]
 func GetUserByID(c *fiber.Ctx) error {
 	idParam := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(idParam)
@@ -72,6 +100,23 @@ func GetUserByID(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+// UpdateProfile godoc
+// @Summary Update user profile
+// @Tags Users
+// @Security BearerAuth
+// @Accept multipart/form-data
+// @Produce json
+// @Param id path string true "User ID"
+// @Param name formData string false "Name"
+// @Param phone formData string false "Phone"
+// @Param address formData string false "Address"
+// @Param nik formData string false "NIK"
+// @Param foto_profile formData file false "Profile Photo"
+// @Param foto_ktp formData file false "KTP Photo"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/users/{id} [put]
 func UpdateProfile(c *fiber.Ctx) error {
 	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
@@ -131,6 +176,16 @@ func UpdateProfile(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"message": "Profil berhasil diperbarui"})
 }
 
+// DeleteUser godoc
+// @Summary Delete user
+// @Tags Users
+// @Security BearerAuth
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/users/{id} [delete]
 func DeleteUser(c *fiber.Ctx) error {
 	idParam := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(idParam)

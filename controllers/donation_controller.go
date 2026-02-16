@@ -22,6 +22,23 @@ type ApproveRequest struct {
 	Condition string `json:"condition"`
 }
 
+// CreateDonation godoc
+// @Summary Create donation
+// @Tags Donations
+// @Security BearerAuth
+// @Accept multipart/form-data
+// @Produce json
+// @Param tool_name formData string true "Tool Name"
+// @Param category formData string true "Category"
+// @Param description formData string true "Description"
+// @Param pickup_address formData string true "Pickup Address"
+// @Param pickup_date formData string true "Pickup Date"
+// @Param quantity formData int true "Quantity"
+// @Param image formData file true "Image"
+// @Success 201 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/donations/ [post]
 func CreateDonation(c *fiber.Ctx) error {
 	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
@@ -65,6 +82,14 @@ func CreateDonation(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{"message": "Terima kasih! Donasi Anda sedang direview."})
 }
 
+// GetAllDonations godoc
+// @Summary Get all donations (admin)
+// @Tags Donations
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {array} map[string]interface{}
+// @Failure 401 {object} map[string]string
+// @Router /api/donations/ [get]
 func GetAllDonations(c *fiber.Ctx) error {
 	coll := config.DB.Collection("donations")
 
@@ -113,6 +138,14 @@ func GetAllDonations(c *fiber.Ctx) error {
 	return c.JSON(results)
 }
 
+// GetUserDonations godoc
+// @Summary Get current user donations
+// @Tags Donations
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {array} models.Donation
+// @Failure 401 {object} map[string]string
+// @Router /api/donations/history [get]
 func GetUserDonations(c *fiber.Ctx) error {
 	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
@@ -141,6 +174,18 @@ func GetUserDonations(c *fiber.Ctx) error {
 	return c.JSON(donations)
 }
 
+// ApproveDonation godoc
+// @Summary Approve donation and add stock
+// @Tags Donations
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "Donation ID"
+// @Param request body ApproveRequest true "QC Condition"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/donations/{id}/approve [put]
 func ApproveDonation(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, _ := primitive.ObjectIDFromHex(id)
@@ -211,6 +256,15 @@ func ApproveDonation(c *fiber.Ctx) error {
 	})
 }
 
+// ReceiveDonation godoc
+// @Summary Mark donation as received
+// @Tags Donations
+// @Security BearerAuth
+// @Produce json
+// @Param id path string true "Donation ID"
+// @Success 200 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/donations/{id}/receive [put]
 func ReceiveDonation(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, _ := primitive.ObjectIDFromHex(id)

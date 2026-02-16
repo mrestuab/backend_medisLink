@@ -19,6 +19,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Register godoc
+// @Summary Register user baru
+// @Description Membuat akun user baru
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body models.User true "User Data"
+// @Success 201 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 409 {object} map[string]string
+// @Router /register [post]
 func Register(c *fiber.Ctx) error {
 	var user models.User
 	if err := c.BodyParser(&user); err != nil {
@@ -59,6 +70,16 @@ func Register(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{"message": "User registered successfully"})
 }
 
+// Login godoc
+// @Summary Login user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param credentials body object true "Login Data"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /api/auth/login [post]
 func Login(c *fiber.Ctx) error {
 	type LoginInput struct {
 		Email    string `json:"email"`
@@ -109,6 +130,17 @@ func generateOTP() (string, error) {
 }
 
 // RequestPasswordReset - User request untuk reset password
+
+// RequestPasswordReset godoc
+// @Summary Request reset password
+// @Description Mengirim OTP ke email user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body object true "Email"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /password/request [post]
 func RequestPasswordReset(c *fiber.Ctx) error {
 	type ResetRequest struct {
 		Email string `json:"email"`
@@ -175,6 +207,17 @@ func RequestPasswordReset(c *fiber.Ctx) error {
 }
 
 // VerifyOTP - Verifikasi kode OTP yang diinput user
+
+// VerifyOTP godoc
+// @Summary Verifikasi OTP
+// @Description Verifikasi kode OTP reset password
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body object true "Email dan OTP"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]string
+// @Router /password/verify [post]
 func VerifyOTP(c *fiber.Ctx) error {
 	type VerifyRequest struct {
 		Email string `json:"email"`
@@ -217,6 +260,17 @@ func VerifyOTP(c *fiber.Ctx) error {
 }
 
 // ResetPassword - Update password baru setelah OTP terverifikasi
+
+// ResetPassword godoc
+// @Summary Reset password
+// @Description Reset password menggunakan OTP
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body object true "Email, OTP, New Password"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /password/reset [post]
 func ResetPassword(c *fiber.Ctx) error {
 	type ResetPasswordRequest struct {
 		Email       string `json:"email"`

@@ -12,6 +12,17 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// CreateInventoryLog godoc
+// @Summary Create inventory log
+// @Tags InventoryLogs
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param log body models.InventoryLog true "Inventory Log Data"
+// @Success 201 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/inventory-logs/ [post]
 func CreateInventoryLog(c *fiber.Ctx) error {
 	var log models.InventoryLog
 	if err := c.BodyParser(&log); err != nil {
@@ -30,6 +41,14 @@ func CreateInventoryLog(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{"message": "Inventory log created successfully"})
 }
 
+// GetAllInventoryLogs godoc
+// @Summary Get all inventory logs
+// @Tags InventoryLogs
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {array} models.InventoryLog
+// @Failure 401 {object} map[string]string
+// @Router /api/inventory-logs/ [get]
 func GetAllInventoryLogs(c *fiber.Ctx) error {
 	coll := config.DB.Collection("inventory_logs")
 

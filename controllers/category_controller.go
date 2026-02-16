@@ -11,11 +11,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// CreateCategory godoc
+// @Summary Create category
+// @Tags Categories
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param category body models.Category true "Category Data"
+// @Success 201 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/categories/ [post]
 func CreateCategory(c *fiber.Ctx) error {
 	var cat models.Category
 	if err := c.BodyParser(&cat); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
 	}
+
 	cat.ID = primitive.NewObjectID()
 
 	coll := config.DB.Collection("categories")
@@ -27,6 +39,14 @@ func CreateCategory(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{"message": "Category created successfully"})
 }
 
+// GetAllCategories godoc
+// @Summary Get all categories
+// @Tags Categories
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {array} models.Category
+// @Failure 401 {object} map[string]string
+// @Router /api/categories/ [get]
 func GetAllCategories(c *fiber.Ctx) error {
 	coll := config.DB.Collection("categories")
 
@@ -41,4 +61,3 @@ func GetAllCategories(c *fiber.Ctx) error {
 
 	return c.JSON(categories)
 }
-

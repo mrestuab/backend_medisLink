@@ -14,6 +14,26 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// CreateTool godoc
+// @Summary Create medical tool
+// @Tags Tools
+// @Security BearerAuth
+// @Accept multipart/form-data
+// @Produce json
+// @Param name formData string true "Tool Name"
+// @Param category_id formData string true "Category ID"
+// @Param type formData string false "Type"
+// @Param size formData string false "Size"
+// @Param dimensions formData string false "Dimensions"
+// @Param weight_cap formData string false "Weight Capacity"
+// @Param description formData string false "Description"
+// @Param condition formData string false "Condition"
+// @Param stock formData int true "Stock"
+// @Param image formData file true "Image"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/tools/ [post]
 func CreateTool(c *fiber.Ctx) error {
 	fileHeader, err := c.FormFile("image")
 	if err != nil {
@@ -61,6 +81,12 @@ func CreateTool(c *fiber.Ctx) error {
 	})
 }
 
+// GetAllTools godoc
+// @Summary Get all tools
+// @Tags Tools
+// @Produce json
+// @Success 200 {array} models.MedicalTool
+// @Router /api/tools/ [get]
 func GetAllTools(c *fiber.Ctx) error {
 	coll := config.DB.Collection("medical_tools")
 
@@ -81,6 +107,15 @@ func GetAllTools(c *fiber.Ctx) error {
 	return c.JSON(tools)
 }
 
+// GetToolByID godoc
+// @Summary Get tool by ID
+// @Tags Tools
+// @Produce json
+// @Param id path string true "Tool ID"
+// @Success 200 {object} models.MedicalTool
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /api/tools/{id} [get]
 func GetToolByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -98,6 +133,18 @@ func GetToolByID(c *fiber.Ctx) error {
 	return c.JSON(tool)
 }
 
+// UpdateTool godoc
+// @Summary Update tool
+// @Tags Tools
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "Tool ID"
+// @Param tool body models.MedicalTool true "Tool Data"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/tools/{id} [put]
 func UpdateTool(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -120,6 +167,16 @@ func UpdateTool(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"message": "Tool updated successfully"})
 }
 
+// DeleteTool godoc
+// @Summary Delete tool
+// @Tags Tools
+// @Security BearerAuth
+// @Produce json
+// @Param id path string true "Tool ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/tools/{id} [delete]
 func DeleteTool(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)

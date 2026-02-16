@@ -14,6 +14,19 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// CreateNews godoc
+// @Summary Create news
+// @Tags News
+// @Security BearerAuth
+// @Accept multipart/form-data
+// @Produce json
+// @Param title formData string true "Title"
+// @Param content formData string true "Content"
+// @Param image formData file false "Image"
+// @Success 201 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/news/ [post]
 func CreateNews(c *fiber.Ctx) error {
 	fileHeader, err := c.FormFile("image")
 	var imageUrl string
@@ -52,6 +65,12 @@ func CreateNews(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{"message": "News created successfully"})
 }
 
+// GetAllNews godoc
+// @Summary Get all news
+// @Tags News
+// @Produce json
+// @Success 200 {array} models.News
+// @Router /api/news/ [get]
 func GetAllNews(c *fiber.Ctx) error {
 	coll := config.DB.Collection("news")
 
@@ -67,6 +86,15 @@ func GetAllNews(c *fiber.Ctx) error {
 	return c.JSON(newsList)
 }
 
+// GetNewsByID godoc
+// @Summary Get news by ID
+// @Tags News
+// @Produce json
+// @Param id path string true "News ID"
+// @Success 200 {object} models.News
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /api/news/{id} [get]
 func GetNewsByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -90,6 +118,18 @@ func GetNewsByID(c *fiber.Ctx) error {
 	return c.JSON(news)
 }
 
+// UpdateNews godoc
+// @Summary Update news
+// @Tags News
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "News ID"
+// @Param news body models.News true "News Data"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/news/{id} [put]
 func UpdateNews(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -111,6 +151,16 @@ func UpdateNews(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"message": "News updated successfully"})
 }
 
+// DeleteNews godoc
+// @Summary Delete news
+// @Tags News
+// @Security BearerAuth
+// @Produce json
+// @Param id path string true "News ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/news/{id} [delete]
 func DeleteNews(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)

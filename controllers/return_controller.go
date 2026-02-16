@@ -12,6 +12,17 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// CreateReturn godoc
+// @Summary Create return record
+// @Tags Returns
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param return body models.Return true "Return Data"
+// @Success 201 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/returns/ [post]
 func CreateReturn(c *fiber.Ctx) error {
 	var ret models.Return
 	if err := c.BodyParser(&ret); err != nil {
@@ -44,6 +55,14 @@ func CreateReturn(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{"message": "Return recorded successfully"})
 }
 
+// GetAllReturns godoc
+// @Summary Get all returns
+// @Tags Returns
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {array} models.Return
+// @Failure 401 {object} map[string]string
+// @Router /api/returns/ [get]
 func GetAllReturns(c *fiber.Ctx) error {
 	coll := config.DB.Collection("returns")
 
