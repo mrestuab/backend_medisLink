@@ -14,26 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// CreateTool godoc
-// @Summary Create medical tool
-// @Tags Tools
-// @Security BearerAuth
-// @Accept multipart/form-data
-// @Produce json
-// @Param name formData string true "Tool Name"
-// @Param category_id formData string true "Category ID"
-// @Param type formData string false "Type"
-// @Param size formData string false "Size"
-// @Param dimensions formData string false "Dimensions"
-// @Param weight_cap formData string false "Weight Capacity"
-// @Param description formData string false "Description"
-// @Param condition formData string false "Condition"
-// @Param stock formData int true "Stock"
-// @Param image formData file true "Image"
-// @Success 201 {object} map[string]interface{}
-// @Failure 400 {object} map[string]string
-// @Failure 401 {object} map[string]string
-// @Router /api/tools/ [post]
 func CreateTool(c *fiber.Ctx) error {
 	fileHeader, err := c.FormFile("image")
 	if err != nil {
@@ -81,12 +61,6 @@ func CreateTool(c *fiber.Ctx) error {
 	})
 }
 
-// GetAllTools godoc
-// @Summary Get all tools
-// @Tags Tools
-// @Produce json
-// @Success 200 {array} models.MedicalTool
-// @Router /api/tools/ [get]
 func GetAllTools(c *fiber.Ctx) error {
 	coll := config.DB.Collection("medical_tools")
 
@@ -107,15 +81,6 @@ func GetAllTools(c *fiber.Ctx) error {
 	return c.JSON(tools)
 }
 
-// GetToolByID godoc
-// @Summary Get tool by ID
-// @Tags Tools
-// @Produce json
-// @Param id path string true "Tool ID"
-// @Success 200 {object} models.MedicalTool
-// @Failure 400 {object} map[string]string
-// @Failure 404 {object} map[string]string
-// @Router /api/tools/{id} [get]
 func GetToolByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -133,18 +98,6 @@ func GetToolByID(c *fiber.Ctx) error {
 	return c.JSON(tool)
 }
 
-// UpdateTool godoc
-// @Summary Update tool
-// @Tags Tools
-// @Security BearerAuth
-// @Accept json
-// @Produce json
-// @Param id path string true "Tool ID"
-// @Param tool body models.MedicalTool true "Tool Data"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} map[string]string
-// @Failure 401 {object} map[string]string
-// @Router /api/tools/{id} [put]
 func UpdateTool(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -152,31 +105,78 @@ func UpdateTool(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid ID"})
 	}
 
-	var tool models.MedicalTool
-	if err := c.BodyParser(&tool); err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
+	// Parse request body
+	var updateData map[string]interface{}
+	if err := c.BodyParser(&updateData); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})
+	}
+
+	// Build update document
+	update := bson.M{
+		"$set": bson.M{
+			"updated_at": time.Now(),
+		},
+	}
+
+	// Add fields to update if they exist in request
+	if name, ok := updateData["name"].(string); ok && name != "" {
+		update["$set"].(bson.M)["name"] = name
+	}
+	if categoryID, ok := updateData["category_id"].(string); ok {
+		update["$set"].(bson.M)["category_id"] = categoryID
+	}
+	if toolType, ok := updateData["type"].(string); ok {
+		update["$set"].(bson.M)["type"] = toolType
+	}
+	if size, ok := updateData["size"].(string); ok {
+		update["$set"].(bson.M)["size"] = size
+	}
+	if dimensions, ok := updateData["dimensions"].(string); ok {
+		update["$set"].(bson.M)["dimensions"] = dimensions
+	}
+	if weightCap, ok := updateData["weight_cap"].(string); ok {
+		update["$set"].(bson.M)["weight_cap"] = weightCap
+	}
+	if description, ok := updateData["description"].(string); ok {
+		update["$set"].(bson.M)["description"] = description
+	}
+	if condition, ok := updateData["condition"].(string); ok {
+		update["$set"].(bson.M)["condition"] = condition
+	}
+	if status, ok := updateData["status"].(string); ok {
+		update["$set"].(bson.M)["status"] = status
+	}
+
+	// Handle stock (can be float64 from JSON)
+	if stock, ok := updateData["stock"]; ok {
+		switch v := stock.(type) {
+		case float64:
+			update["$set"].(bson.M)["stock"] = int(v)
+		case int:
+			update["$set"].(bson.M)["stock"] = v
+		case string:
+			if stockInt, err := strconv.Atoi(v); err == nil {
+				update["$set"].(bson.M)["stock"] = stockInt
+			}
+		}
 	}
 
 	coll := config.DB.Collection("medical_tools")
-	update := bson.M{"$set": tool}
-	_, err = coll.UpdateOne(context.Background(), bson.M{"_id": objID}, update)
+	result, err := coll.UpdateOne(context.Background(), bson.M{"_id": objID}, update)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to update tool"})
 	}
 
-	return c.JSON(fiber.Map{"message": "Tool updated successfully"})
+	if result.MatchedCount == 0 {
+		return c.Status(404).JSON(fiber.Map{"error": "Tool not found"})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Tool updated successfully",
+		"id":      id,
+	})
 }
 
-// DeleteTool godoc
-// @Summary Delete tool
-// @Tags Tools
-// @Security BearerAuth
-// @Produce json
-// @Param id path string true "Tool ID"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} map[string]string
-// @Failure 401 {object} map[string]string
-// @Router /api/tools/{id} [delete]
 func DeleteTool(c *fiber.Ctx) error {
 	id := c.Params("id")
 	objID, err := primitive.ObjectIDFromHex(id)
