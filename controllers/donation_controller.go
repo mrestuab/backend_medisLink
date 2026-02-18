@@ -251,6 +251,13 @@ func ApproveDonation(c *fiber.Ctx) error {
 		}},
 	)
 
+	CreateNotificationService(
+		donation.UserID.Hex(),
+		"Donasi Diterima",
+		"Donasi Anda telah disetujui dan stok sudah bertambah. Terima kasih atas kontribusinya!",
+		"success",
+	)
+
 	return c.JSON(fiber.Map{
 		"message": "Sukses! Barang validasi QC selesai dan stok bertambah.",
 	})
