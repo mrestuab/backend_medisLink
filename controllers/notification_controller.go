@@ -82,13 +82,16 @@ func MarkAsRead(c *fiber.Ctx) error {
 func CreateNotificationService(userID string, title string, message string, notifType string) {
 	coll := config.DB.Collection("notifications")
 
+	// Set waktu ke Asia/Jakarta (WIB)
+	loc, _ := time.LoadLocation("Asia/Jakarta")
+	now := time.Now().In(loc)
 	notif := models.Notification{
 		ID:        primitive.NewObjectID(),
 		UserID:    userID,
 		Title:     title,
 		Message:   message,
 		IsRead:    false,
-		CreatedAt: time.Now().Format("2006-01-02 15:04:05"),
+		CreatedAt: now.Format("2006-01-02 15:04:05"),
 		Type:      notifType,
 	}
 
